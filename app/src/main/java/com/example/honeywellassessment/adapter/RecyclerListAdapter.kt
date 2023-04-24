@@ -22,10 +22,11 @@ class RecyclerListAdapter(private val itemList: ArrayList<Item>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = itemList[position]
 
-        holder.imageView.setImageResource(item.image)
-        holder.nameView.text = item.name
-        holder.colorView.text = item.color
-
+        holder.apply {
+            imageView.setImageResource(item.image)
+            nameView.text = item.name
+            colorView.text = item.color
+        }
     }
 
     override fun getItemCount(): Int {
