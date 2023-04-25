@@ -1,15 +1,15 @@
-package com.example.honeywellassessment
+package com.example.honeywellassessment.View
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.honeywellassessment.adapter.RecyclerListAdapter
 import com.example.honeywellassessment.databinding.FragmentListBinding
-import com.example.honeywellassessment.model.Item
 import com.example.honeywellassessment.viewmodel.ListViewModel
 
 
@@ -24,6 +24,18 @@ class ListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentListBinding.inflate(inflater, container, false)
+        val viewModel: ListViewModel = ViewModelProvider(this).get(ListViewModel::class.java)
+
+        setupRecyclerView()
+        binding.btnAdd.setOnClickListener {
+            viewModel.addItem()
+        }
+        viewModel.items.observe(this.viewLifecycleOwner, Observer {
+            println("Add item observer")
+
+            binding.rvList.adapter = RecyclerListAdapter(viewModel.items.value!!)
+
+        })
 
         return binding.root
 
@@ -31,18 +43,20 @@ class ListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        var viewModel: ListViewModel = ViewModelProvider(this).get(ListViewModel::class.java)
-
-        binding.rvList.apply {
-            setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(context)
-            adapter = RecyclerListAdapter(viewModel.getDummyData())
-        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    fun setupRecyclerView(){
+        ViewModelProvider(this).get(ListViewModel::class.java).let {viewModel ->
+            binding.rvList.apply {
+                setHasFixedSize(true)
+                layoutManager = LinearLayoutManager(context)
+                adapter = RecyclerListAdapter(viewModel.items.value!!)
+            }
+        }
     }
 }
