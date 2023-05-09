@@ -6,4 +6,7 @@
     <string name="fragment_list_label">Honeywell Item List</string>
     <string name="add_item">Add Item</string>
 
+    <string name="item_name_hint">name</string>
+    <string name="item_color_hint">color</string>
+
 </resources>

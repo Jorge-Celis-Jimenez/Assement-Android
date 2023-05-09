@@ -24,8 +24,19 @@ class ListViewModel : ViewModel() {
 
     //fun getItems(): ArrayList<Item> {return items.value}
 
-    fun addItem(){
-        items.value?.add((Item(R.drawable.ic_launcher_background, "name test", "color test")))
+    fun addItem(name: String, color: String){
+        items.value?.add((Item(R.drawable.ic_launcher_background, name, color)))
+        items.postValue(items.value)
+    }
+
+    fun setItem(item: Item?){
+        items.value?.add(
+            (Item(
+                item?.image?: R.drawable.ic_launcher_background,
+                item?.name ?: "",
+                item?.color ?: ""
+            ))
+        )
         items.postValue(items.value)
     }
 }
