@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.honeywellassessment.adapter.RecyclerListAdapter
 import com.example.honeywellassessment.databinding.FragmentListBinding
 import com.example.honeywellassessment.viewmodel.ListViewModel
@@ -24,18 +26,7 @@ class ListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentListBinding.inflate(inflater, container, false)
-        val viewModel: ListViewModel = ViewModelProvider(this).get(ListViewModel::class.java)
-
         setupRecyclerView()
-        binding.btnAdd.setOnClickListener {
-            viewModel.addItem()
-        }
-        viewModel.items.observe(this.viewLifecycleOwner, Observer {
-            println("Add item observer")
-
-            binding.rvList.adapter = RecyclerListAdapter(viewModel.items.value!!)
-
-        })
 
         return binding.root
 
@@ -57,6 +48,32 @@ class ListFragment : Fragment() {
                 layoutManager = LinearLayoutManager(context)
                 adapter = RecyclerListAdapter(viewModel.items.value!!)
             }
+
+            binding.btnAdd.setOnClickListener {
+                viewModel.addItem()
+            }
+
+            viewModel.items.observe(this.viewLifecycleOwner, Observer {
+                binding.rvList.adapter?.notifyItemInserted(viewModel.items.value?.size!!)
+            })
+
+            ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
+                ): Boolean {
+                    return false
+                }
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                    viewModel.items.value?.removeAt(viewHolder.absoluteAdapterPosition)
+                    binding.rvList.adapter?.notifyItemRemoved(viewHolder.absoluteAdapterPosition)
+                }
+            }).attachToRecyclerView(binding.rvList)
+
         }
+
+
     }
 }
